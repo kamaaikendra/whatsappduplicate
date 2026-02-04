@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CallingApp</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS will be added in Part 2 */
+    </style>
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div id="app-container">
+        <!-- Auth View -->
+        <div id="auth-view" class="view">
+            <h1>CallingApp</h1>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <div id="login-error" class="error-message"></div>
+                <button type="submit" class="btn-primary">Log In</button>
+                <p class="auth-switch">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+            </form>
+            
+            <!-- Signup Form (Initially Hidden) -->
+            <form id="signup-form" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signup-password" placeholder="Password (min. 6 characters)" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="signup-username" placeholder="Choose a username" required>
+                </div>
+                <div id="signup-error" class="error-message"></div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <p class="auth-switch">Already have an account? <a href="#" id="show-login">Log In</a></p>
+            </form>
+        </div>
+
+        <!-- Main App View -->
+        <div id="main-view" class="view" style="display: none;">
+            <header class="main-header">
+                <div class="header-top">
+                    <h2>CallingApp</h2>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="add-friend-btn" title="Add Friend">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" id="menu-btn" title="Profile & Settings">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <nav class="header-nav">
+                    <button class="nav-tab active" data-panel="home-content" id="nav-home">
+                        <span>Chats</span>
+                        <span class="badge" id="chats-badge">0</span>
+                    </button>
+                    <button class="nav-tab" data-panel="notifications-content" id="nav-notifications">
+                        <span>Updates</span>
+                        <span class="badge" id="updates-badge">0</span>
+                    </button>
+                    <button class="nav-tab" data-panel="calls-content" id="nav-calls">
+                        <span>Calls</span>
+                        <span class="badge" id="calls-badge">0</span>
+                    </button>
+                </nav>
+            </header>
+            
+            <main id="main-content">
+                <!-- Chats Panel -->
+                <div id="home-content" class="content-panel active">
+                    <div class="panel-header">
+                        <h3>Recent Chats</h3>
+                    </div>
+                    <div id="chats-list" class="list-container">
+                        <!-- Chat items will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Updates Panel -->
+                <div id="notifications-content" class="content-panel">
+                    <div class="panel-header">
+                        <h3>Friend Requests</h3>
+                    </div>
+                    <div id="requests-list" class="list-container">
+                        <!-- Friend requests will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Calls Panel -->
+                <div id="calls-content" class="content-panel">
+                    <div class="panel-header">
+                        <h3>Recent Calls</h3>
+                    </div>
+                    <div id="calls-list" class="list-container">
+                        <!-- Call logs will be dynamically added here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Chat View -->
+        <div id="chat-view" class="view" style="display: none;">
+            <header class="chat-header">
+                <button class="icon-btn" id="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <div class="chat-contact-info">
+                    <div class="contact-avatar">
+                        <span id="contact-avatar">👤</span>
+                    </div>
+                    <div class="contact-details">
+                        <h3 id="contact-name">Contact Name</h3>
+                        <span id="contact-status" class="contact-status">Online</span>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="icon-btn" id="voice-call-btn" title="Voice Call">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M6.54 5c.06.89.21 1.76.45 2.59l-1.2 1.2c-.41-1.2-.67-2.47-.76-3.79h1.51m9.86 12.02c.85.24 1.72.39 2.6.45v1.49c-1.32-.09-2.59-.35-3.8-.75l1.2-1.19M7.5 3H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.49c0-.55-.45-1-1-1-1.24 0-2.45-.2-3.57-.57-.1-.04-.21-.05-.31-.05-.26 0-.51.1-.71.29l-2.2 2.2c-2.83-1.45-5.15-3.76-6.59-6.59l2.2-2.2c.28-.28.36-.67.25-1.02C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1z"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="video-call-btn" title="Video Call">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="chat-more-btn" title="More options">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <div id="chat-messages">
+                <!-- Messages will be dynamically added here -->
+            </div>
+            
+            <div id="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+                <button id="chat-send-btn" class="icon-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Video Call View -->
+        <div id="video-call-view" class="call-view" style="display: none;">
+            <video id="remote-video" autoplay playsinline></video>
+            <video id="local-video" autoplay playsinline muted></video>
+            <div class="call-overlay">
+                <div class="caller-info">
+                    <div class="caller-avatar">👤</div>
+                    <h3 id="video-caller-name">Calling...</h3>
+                    <p id="video-call-status">Connecting...</p>
+                </div>
+                <div class="call-controls">
+                    <button id="video-end-call-btn" class="call-btn end-call">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voice Call View -->
+        <div id="voice-call-view" class="call-view" style="display: none;">
+            <audio id="remote-audio" autoplay></audio>
+            <div class="call-overlay">
+                <div class="caller-info">
+                    <div class="caller-avatar">👤</div>
+                    <h3 id="audio-caller-name">Calling...</h3>
+                    <p id="audio-call-status">Connecting...</p>
+                </div>
+                <div class="call-controls">
+                    <button id="audio-end-call-btn" class="call-btn end-call">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="profile-setup-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Complete Your Profile</h3>
+            <form id="profile-setup-form">
+                <div class="form-group">
+                    <input type="text" id="profile-username" placeholder="Choose a username" required>
+                    <p class="input-hint">This is how others will find you</p>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="profile-display-name" placeholder="Display Name (Optional)">
+                </div>
+                <div id="profile-setup-error" class="error-message"></div>
+                <button type="submit" class="btn-primary">Save Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-friend-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Add Friend by Username</h3>
+            <form id="add-friend-form">
+                <div class="form-group">
+                    <input type="text" id="friend-username" placeholder="Enter username" required>
+                    <p class="input-hint">Enter the exact username of your friend</p>
+                </div>
+                <div id="add-friend-error" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancel-add-friend">Cancel</button>
+                    <button type="submit" class="btn-primary">Send Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-view-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="profile-header">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-info">
+                    <h3 id="modal-username"></h3>
+                    <p id="modal-user-id"></p>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <h4>Your Info</h4>
+                <div class="info-item">
+                    <span>Username:</span>
+                    <span id="info-username"></span>
+                </div>
+                <div class="info-item">
+                    <span>Display Name:</span>
+                    <span id="info-display-name"></span>
+                </div>
+                <div class="info-item">
+                    <span>Email:</span>
+                    <span id="info-email"></span>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <h4>Blocked Users</h4>
+                <div id="blocked-users-list">
+                    <!-- Blocked users will be dynamically added here -->
+                </div>
+                <button id="show-block-user" class="btn-secondary">Block User</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="logout-btn" class="btn-danger">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="incoming-call-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="call-modal-header">
+                <div class="caller-avatar-large">👤</div>
+                <h3 id="incoming-caller-name"></h3>
+                <p id="incoming-call-type"></p>
+            </div>
+            <div class="call-modal-actions">
+                <button id="reject-call-btn" class="call-btn reject">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                    </svg>
+                </button>
+                <button id="accept-call-btn" class="call-btn accept">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Block User Modal -->
+    <div id="block-user-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Block User</h3>
+            <form id="block-user-form">
+                <div class="form-group">
+                    <input type="text" id="block-username" placeholder="Enter username to block" required>
+                    <p class="input-hint">You won't receive messages or calls from blocked users</p>
+                </div>
+                <div id="block-user-error" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancel-block-user">Cancel</button>
+                    <button type="submit" class="btn-danger">Block User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ringtone -->
+    <audio id="ringtone" loop>
+        <!-- Base64 encoded silent WAV file as placeholder -->
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Application Logic -->
+    <script>
+        // JavaScript will be added in Part 3
+    </script>
+</body>
+</html>
+<style>
+    /* Fonts and Root Variables */
+    :root {
+        --wa-header-bg: #005c97;
+        --wa-accent-blue: #34B7F1;
+        --wa-message-out-bg: #e1f6fb;
+        --wa-message-in-bg: #ffffff;
+        --wa-app-bg: #f0f2f5;
+        --wa-chat-bg: #e5ddd5;
+        --wa-icon-color: #f0f2f5;
+        --wa-text-primary: #111b21;
+        --wa-text-secondary: #667781;
+        --wa-border-color: #e9edef;
+        --wa-active-tab-indicator: var(--wa-accent-blue);
+        --wa-button-color: #008069;
+        --wa-link-color: #00a8e8;
+        --wa-shadow: rgba(17, 27, 33, 0.15);
+        --wa-danger: #e91e63;
+        --wa-success: #4CAF50;
+    }
+
+    /* Global & General Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        font-family: 'Roboto', sans-serif;
+        background-color: #d1d7db;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #bdbdbd;
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #999;
+    }
+
+    /* Icon Button */
+    .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+    }
+
+    .icon-btn:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-btn svg {
+        fill: var(--wa-text-primary);
+    }
+
+    /* Main Container */
+    #app-container {
+        width: 100%;
+        max-width: 450px;
+        height: 100%;
+        max-height: 950px;
+        background: white;
+        box-shadow: 0 0 20px var(--wa-shadow);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* View Styling */
+    .view {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: white;
+    }
+
+    /* Auth View */
+    #auth-view {
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    #auth-view h1 {
+        font-size: 3rem;
+        color: var(--wa-button-color);
+        margin-bottom: 40px;
+        font-weight: 700;
+    }
+
+    .auth-form {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--wa-border-color);
+        border-radius: 8px;
+        font-size: 16px;
+        font-family: 'Roboto', sans-serif;
+        background: var(--wa-app-bg);
+    }
+
+    input:focus {
+        outline: none;
+        border-color: var(--wa-button-color);
+        background: white;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--wa-button-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+        background-color: #006d56;
+    }
+
+    .btn-secondary {
+        padding: 10px 20px;
+        background-color: var(--wa-app-bg);
+        color: var(--wa-text-primary);
+        border: 1px solid var(--wa-border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e0e0e0;
+    }
+
+    .btn-danger {
+        padding: 12px 24px;
+        background-color: var(--wa-danger);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c2185b;
+    }
+
+    .auth-switch {
+        text-align: center;
+        margin-top: 20px;
+        color: var(--wa-text-secondary);
+    }
+
+    .auth-switch a {
+        color: var(--wa-link-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-switch a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        color: var(--wa-danger);
+        font-size: 14px;
+        margin: 10px 0;
+        text-align: center;
+        min-height: 20px;
+    }
+
+    .input-hint {
+        font-size: 12px;
+        color: var(--wa-text-secondary);
+        margin-top: 4px;
+    }
+
+    /* Main View */
+    .main-header {
+        background-color: var(--wa-header-bg);
+        color: white;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+    }
+
+    .header-top h2 {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .header-nav {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-tab {
+        flex: 1;
+        padding: 14px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .nav-tab.active {
+        color: white;
+    }
+
+    .nav-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 3px;
+        background-color: var(--wa-active-tab-indicator);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .badge {
+        background-color: var(--wa-danger);
+        color: white;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    /* Main Content */
+    #main-content {
+        flex: 1;
+        overflow: hidden;
+        background-color: var(--wa-app-bg);
+    }
+
+    .content-panel {
+        height: 100%;
+        display: none;
+        flex-direction: column;
+    }
+
+    .content-panel.active {
+        display: flex;
+    }
+
+    .panel-header {
+        padding: 16px;
+        background: white;
+        border-bottom: 1px solid var(--wa-border-color);
+    }
+
+    .panel-header h3 {
+        font-size: 18px;
+        color: var(--wa-text-primary);
+        font-weight: 500;
+    }
+
+    .list-container {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* List Item */
+    .list-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: white;
+        border-bottom: 1px solid var(--wa-border-color);
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .list-item:hover {
+        background-color: var(--wa-app-bg);
+    }
+
+    .contact-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: var(--wa-accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .contact-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .contact-details h4 {
+        font-size: 16px;
+        color: var(--wa-text-primary);
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .contact-details p {
+        font-size: 14px;
+        color: var(--wa-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .item-time {
+        font-size: 12px;
+        color: var(--wa-text-secondary);
+        margin-left: 8px;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 8px;
+        margin-left: 8px;
+    }
+
+    /* Chat View */
+    .chat-header {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background-color: var(--wa-header-bg);
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-contact-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        margin-left: 12px;
+    }
+
+    .contact-status {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .chat-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .chat-header .icon-btn svg {
+        fill: white;
+    }
+
+    /* Chat Messages */
+    #chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        background-color: var(--wa-chat-bg);
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bdbdbd' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        padding: 8px 12px;
+        border-radius: 18px;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message-sent {
+        align-self: flex-end;
+        background-color: var(--wa-message-out-bg);
+        border-bottom-right-radius: 4px;
+    }
+
+    .message-received {
+        align-self: flex-start;
+        background-color: var(--wa-message-in-bg);
+        border-bottom-left-radius: 4px;
+    }
+
+    .message-text {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .message-time {
+        font-size: 11px;
+        color: var(--wa-text-secondary);
+        text-align: right;
+        margin-top: 2px;
+    }
+
+    /* Chat Input */
+    #chat-input-container {
+        display: flex;
+        padding: 12px 16px;
+        background-color: var(--wa-app-bg);
+        border-top: 1px solid var(--wa-border-color);
+        gap: 12px;
+    }
+
+    #chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 24px;
+        border: 1px solid var(--wa-border-color);
+        font-size: 14px;
+    }
+
+    #chat-send-btn {
+        background-color: var(--wa-button-color);
+        border-radius: 50%;
+        padding: 12px;
+    }
+
+    #chat-send-btn svg {
+        fill: white;
+    }
+
+    /* Call Views */
+    .call-view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1000;
+    }
+
+    #remote-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    #local-video {
+        position: absolute;
+        bottom: 100px;
+        right: 20px;
+        width: 120px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        cursor: move;
+    }
+
+    .call-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 40px 20px 20px;
+        color: white;
+        text-align: center;
+    }
+
+    .caller-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--wa-accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 16px;
+    }
+
+    .caller-info h3 {
+        font-size: 24px;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .caller-info p {
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .call-controls {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .call-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+
+    .call-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .call-btn svg {
+        fill: white;
+    }
+
+    .end-call {
+        background-color: var(--wa-danger);
+    }
+
+    .accept {
+        background-color: var(--wa-success);
+    }
+
+    .reject {
+        background-color: var(--wa-danger);
+    }
+
+    /* Modals */
+    .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 12px;
+        padding: 24px;
+        width: 90%;
+        max-width: 400px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h3 {
+        font-size: 20px;
+        color: var(--wa-text-primary);
+        margin-bottom: 20px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    /* Profile Modal */
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--wa-border-color);
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: var(--wa-accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+    }
+
+    .profile-info h3 {
+        font-size: 18px;
+        color: var(--wa-text-primary);
+        margin-bottom: 4px;
+        text-align: left;
+    }
+
+    .profile-info p {
+        font-size: 14px;
+        color: var(--wa-text-secondary);
+    }
+
+    .modal-section {
+        margin: 20px 0;
+    }
+
+    .modal-section h4 {
+        font-size: 16px;
+        color: var(--wa-text-primary);
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--wa-border-color);
+        font-size: 14px;
+    }
+
+    .info-item span:first-child {
+        color: var(--wa-text-secondary);
+    }
+
+    .info-item span:last-child {
+        color: var(--wa-text-primary);
+        font-weight: 500;
+    }
+
+    /* Call Modal */
+    .call-modal-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .caller-avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--wa-accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        margin: 0 auto 16px;
+    }
+
+    .call-modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+    }
+
+    .call-modal-actions .call-btn {
+        width: 70px;
+        height: 70px;
+    }
+
+    /* Blocked Users */
+    .blocked-user {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--wa-border-color);
+    }
+
+    .blocked-user span {
+        font-size: 14px;
+    }
+
+    .unblock-btn {
+        padding: 4px 12px;
+        background-color: var(--wa-app-bg);
+        border: 1px solid var(--wa-border-color);
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .unblock-btn:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+<script>
+    // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0Ne46PQqmvUnsq89GUJlKfLpWvsHmtbk",
+    authDomain: "kimi-win-90b82.firebaseapp.com",
+    databaseURL: "https://kimi-win-90b82-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "kimi-win-90b82",
+    storageBucket: "kimi-win-90b82.firebasestorage.app",
+    messagingSenderId: "889222798634",
+    appId: "1:889222798634:web:86770b996003152f19d253"
+  };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // ======================
+    // GLOBAL STATE
+    // ======================
+    let currentUser = null;
+    let currentUserProfile = null; // Add this to store user profile data
+    let currentChatPartner = null;
+    let currentChatId = null;
+    let peerConnection = null;
+    let localStream = null;
+    let remoteStream = null;
+    let currentCallId = null;
+    let currentCallType = null;
+    let incomingCallRef = null;
+    let iceCandidatesRef = null;
+
+    // DOM Elements
+    const views = {
+        auth: document.getElementById('auth-view'),
+        main: document.getElementById('main-view'),
+        chat: document.getElementById('chat-view'),
+        videoCall: document.getElementById('video-call-view'),
+        voiceCall: document.getElementById('voice-call-view')
+    };
+
+    // ======================
+    // UTILITY FUNCTIONS
+    // ======================
+    function showView(viewName) {
+        Object.values(views).forEach(view => {
+            if (view) view.style.display = 'none';
+        });
+        
+        if (views[viewName]) {
+            views[viewName].style.display = 'flex';
+        }
+    }
+
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function showPanel(panelName) {
+        document.querySelectorAll('.content-panel').forEach(panel => {
+            panel.classList.remove('active');
+            panel.style.display = 'none';
+        });
+        
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        const panel = document.getElementById(panelName);
+        const tab = document.querySelector(`[data-panel="${panelName}"]`);
+        
+        if (panel) {
+            panel.classList.add('active');
+            panel.style.display = 'flex';
+        }
+        
+        if (tab) {
+            tab.classList.add('active');
+        }
+    }
+
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 24 * 60 * 60 * 1000) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else if (diff < 7 * 24 * 60 * 60 * 1000) {
+            return date.toLocaleDateString([], { weekday: 'short' });
+        } else {
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
+    }
+
+    // ======================
+    // AUTHENTICATION
+    // ======================
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            currentUser = user;
+            
+            // Check if user profile exists
+            const userProfileRef = database.ref(`users/${user.uid}`);
+            userProfileRef.once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    showModal('profile-setup-modal');
+                    document.getElementById('profile-setup-form').reset();
+                } else {
+                    currentUserProfile = snapshot.val(); // Store user profile
+                    initializeApp(user.uid);
+                    showView('main');
+                }
+            });
+        } else {
+            currentUser = null;
+            currentUserProfile = null;
+            showView('auth');
+        }
+    });
+
+    // Login Form
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const errorElement = document.getElementById('login-error');
+        
+        try {
+            errorElement.textContent = '';
+            await auth.signInWithEmailAndPassword(email, password);
+        } catch (error) {
+            errorElement.textContent = error.message;
+        }
+    });
+
+    // Signup Form
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const username = document.getElementById('signup-username').value.trim();
+        const errorElement = document.getElementById('signup-error');
+        
+        if (username.length < 3) {
+            errorElement.textContent = 'Username must be at least 3 characters';
+            return;
+        }
+        
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            errorElement.textContent = 'Username can only contain letters, numbers, and underscores';
+            return;
+        }
+        
+        try {
+            errorElement.textContent = '';
+            
+            const usernameSnapshot = await database.ref('usernames').child(username).once('value');
+            if (usernameSnapshot.exists()) {
+                errorElement.textContent = 'Username is already taken';
+                return;
+            }
+            
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            
+            // Create user profile
+            await database.ref(`users/${user.uid}`).set({
+                email: email,
+                username: username,
+                displayName: username,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            await database.ref(`usernames/${username}`).set(user.uid);
+            
+        } catch (error) {
+            errorElement.textContent = error.message;
+        }
+    });
+
+    // Toggle between login and signup forms
+    document.getElementById('show-signup').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('signup-form').style.display = 'block';
+    });
+
+    document.getElementById('show-login').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('signup-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+    });
+
+    // ======================
+    // PROFILE MANAGEMENT
+    // ======================
+    document.getElementById('profile-setup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('profile-username').value.trim();
+        const displayName = document.getElementById('profile-display-name').value.trim() || username;
+        const errorElement = document.getElementById('profile-setup-error');
+        
+        if (username.length < 3) {
+            errorElement.textContent = 'Username must be at least 3 characters';
+            return;
+        }
+        
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            errorElement.textContent = 'Username can only contain letters, numbers, and underscores';
+            return;
+        }
+        
+        try {
+            errorElement.textContent = '';
+            
+            const usernameSnapshot = await database.ref('usernames').child(username).once('value');
+            if (usernameSnapshot.exists()) {
+                errorElement.textContent = 'Username is already taken';
+                return;
+            }
+            
+            // Create user profile
+            await database.ref(`users/${currentUser.uid}`).update({
+                username: username,
+                displayName: displayName,
+                profileComplete: true
+            });
+            
+            await database.ref(`usernames/${username}`).set(currentUser.uid);
+            
+            currentUserProfile = {
+                username: username,
+                displayName: displayName,
+                email: currentUser.email
+            };
+            
+            hideModal('profile-setup-modal');
+            initializeApp(currentUser.uid);
+            showView('main');
+            
+        } catch (error) {
+            errorElement.textContent = error.message;
+        }
+    });
+
+    // ======================
+    // APP INITIALIZATION
+    // ======================
+    function initializeApp(userId) {
+        loadUserData(userId);
+        setupContactsListener(userId);
+        setupRequestsListener(userId);
+        setupUnreadCountsListener(userId);
+        setupCallsListener(userId);
+        updateBadges();
+    }
+
+    async function loadUserData(userId) {
+        const userRef = database.ref(`users/${userId}`);
+        userRef.on('value', (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+                currentUserProfile = userData; // Update the profile
+                
+                document.getElementById('modal-username').textContent = userData.username;
+                document.getElementById('modal-user-id').textContent = `ID: ${userId.substring(0, 8)}...`;
+                document.getElementById('info-username').textContent = userData.username;
+                document.getElementById('info-display-name').textContent = userData.displayName || userData.username;
+                document.getElementById('info-email').textContent = currentUser.email;
+                
+                loadBlockedUsers(userId);
+            }
+        });
+    }
+
+    // ======================
+    // FRIEND SYSTEM
+    // ======================
+    document.getElementById('add-friend-btn').addEventListener('click', () => {
+        showModal('add-friend-modal');
+        document.getElementById('add-friend-form').reset();
+    });
+
+    document.getElementById('cancel-add-friend').addEventListener('click', () => {
+        hideModal('add-friend-modal');
+    });
+
+    document.getElementById('add-friend-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('friend-username').value.trim();
+        const errorElement = document.getElementById('add-friend-error');
+        
+        if (!username) {
+            errorElement.textContent = 'Please enter a username';
+            return;
+        }
+        
+        if (!currentUserProfile) {
+            errorElement.textContent = 'User profile not loaded';
+            return;
+        }
+        
+        if (username === currentUserProfile.username) {
+            errorElement.textContent = 'You cannot add yourself as a friend';
+            return;
+        }
+        
+        try {
+            errorElement.textContent = '';
+            
+            const usernameSnapshot = await database.ref('usernames').child(username).once('value');
+            
+            if (!usernameSnapshot.exists()) {
+                errorElement.textContent = 'User not found';
+                return;
+            }
+            
+            const friendUid = usernameSnapshot.val();
+            
+            const isFriendSnapshot = await database.ref(`contacts/${currentUser.uid}/${friendUid}`).once('value');
+            if (isFriendSnapshot.exists()) {
+                errorElement.textContent = 'You are already friends with this user';
+                return;
+            }
+            
+            const requestSnapshot = await database.ref(`requests/${friendUid}/${currentUser.uid}`).once('value');
+            if (requestSnapshot.exists()) {
+                errorElement.textContent = 'Friend request already sent';
+                return;
+            }
+            
+            // Create friend request using currentUserProfile
+            await database.ref(`requests/${friendUid}/${currentUser.uid}`).set({
+                fromUid: currentUser.uid,
+                fromUsername: currentUserProfile.username,
+                fromDisplayName: currentUserProfile.displayName || currentUserProfile.username,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                status: 'pending'
+            });
+            
+            errorElement.textContent = 'Friend request sent!';
+            errorElement.style.color = 'green';
+            
+            setTimeout(() => {
+                hideModal('add-friend-modal');
+                errorElement.style.color = '';
+                errorElement.textContent = '';
+            }, 1500);
+            
+        } catch (error) {
+            errorElement.textContent = error.message;
+        }
+    });
+
+    function setupRequestsListener(userId) {
+        const requestsRef = database.ref(`requests/${userId}`);
+        
+        requestsRef.on('value', (snapshot) => {
+            const requestsList = document.getElementById('requests-list');
+            requestsList.innerHTML = '';
+            
+            const requests = snapshot.val() || {};
+            let requestCount = 0;
+            
+            Object.entries(requests).forEach(([fromUid, requestData]) => {
+                if (requestData.status === 'pending') {
+                    requestCount++;
+                    const requestItem = createRequestElement(fromUid, requestData);
+                    requestsList.appendChild(requestItem);
+                }
+            });
+            
+            document.getElementById('updates-badge').textContent = requestCount || '';
+        });
+    }
+
+    function createRequestElement(fromUid, requestData) {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+            <div class="contact-avatar">${getInitials(requestData.fromDisplayName)}</div>
+            <div class="contact-details">
+                <h4>${requestData.fromDisplayName}</h4>
+                <p>@${requestData.fromUsername}</p>
+                <p class="item-time">${formatTime(requestData.timestamp)}</p>
+            </div>
+            <div class="request-actions">
+                <button class="btn-primary accept-request" data-uid="${fromUid}">Accept</button>
+                <button class="btn-secondary reject-request" data-uid="${fromUid}">Reject</button>
+            </div>
+        `;
+        
+        return div;
+    }
+
+    function getInitials(name) {
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    }
+
+    // Handle accept/reject requests
+    document.getElementById('requests-list').addEventListener('click', async (e) => {
+        const fromUid = e.target.getAttribute('data-uid');
+        if (!fromUid) return;
+        
+        if (e.target.classList.contains('accept-request')) {
+            await acceptFriendRequest(fromUid);
+        } else if (e.target.classList.contains('reject-request')) {
+            await database.ref(`requests/${currentUser.uid}/${fromUid}`).remove();
+        }
+    });
+
+    async function acceptFriendRequest(fromUid) {
+        try {
+            const [fromUserSnapshot, currentUserSnapshot] = await Promise.all([
+                database.ref(`users/${fromUid}`).once('value'),
+                database.ref(`users/${currentUser.uid}`).once('value')
+            ]);
+            
+            const fromUserData = fromUserSnapshot.val();
+            const currentUserData = currentUserSnapshot.val();
+            
+            await Promise.all([
+                database.ref(`contacts/${currentUser.uid}/${fromUid}`).set({
+                    uid: fromUid,
+                    username: fromUserData.username,
+                    displayName: fromUserData.displayName || fromUserData.username,
+                    addedAt: firebase.database.ServerValue.TIMESTAMP
+                }),
+                database.ref(`contacts/${fromUid}/${currentUser.uid}`).set({
+                    uid: currentUser.uid,
+                    username: currentUserData.username,
+                    displayName: currentUserData.displayName || currentUserData.username,
+                    addedAt: firebase.database.ServerValue.TIMESTAMP
+                })
+            ]);
+            
+            await database.ref(`requests/${currentUser.uid}/${fromUid}`).remove();
+            
+        } catch (error) {
+            console.error('Error accepting friend request:', error);
+        }
+    }
+
+    // ======================
+    // CONTACTS & CHAT LIST
+    // ======================
+    function setupContactsListener(userId) {
+        const contactsRef = database.ref(`contacts/${userId}`);
+        
+        contactsRef.on('value', async (snapshot) => {
+            const chatsList = document.getElementById('chats-list');
+            chatsList.innerHTML = '';
+            
+            const contacts = snapshot.val() || {};
+            
+            for (const [contactUid, contactData] of Object.entries(contacts)) {
+                const chatItem = await createChatItem(contactUid, contactData);
+                chatsList.appendChild(chatItem);
+            }
+        });
+    }
+
+    async function createChatItem(contactUid, contactData) {
+        const chatId = [currentUser.uid, contactUid].sort().join('_');
+        const messagesRef = database.ref(`messages/${chatId}`).limitToLast(1);
+        
+        const snapshot = await messagesRef.once('value');
+        let lastMessage = 'No messages yet';
+        let lastMessageTime = Date.now();
+        
+        snapshot.forEach((childSnapshot) => {
+            const message = childSnapshot.val();
+            lastMessage = message.text;
+            lastMessageTime = message.timestamp;
+        });
+        
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.setAttribute('data-uid', contactUid);
+        div.innerHTML = `
+            <div class="contact-avatar">${getInitials(contactData.displayName)}</div>
+            <div class="contact-details">
+                <h4>${contactData.displayName}</h4>
+                <p>@${contactData.username}</p>
+                <p class="last-message">${lastMessage}</p>
+            </div>
+            <div class="item-time">${formatTime(lastMessageTime)}</div>
+        `;
+        
+        div.addEventListener('click', () => openChat(contactUid, contactData));
+        return div;
+    }
+
+    // ======================
+    // MESSAGING - FIXED VERSION
+    // ======================
+    async function openChat(contactUid, contactData) {
+        currentChatPartner = contactData;
+        currentChatPartner.uid = contactUid;
+        currentChatId = [currentUser.uid, contactUid].sort().join('_');
+        
+        document.getElementById('contact-name').textContent = contactData.displayName;
+        document.getElementById('contact-avatar').textContent = getInitials(contactData.displayName);
+        
+        const messagesContainer = document.getElementById('chat-messages');
+        messagesContainer.innerHTML = '';
+        
+        setupMessageListener(currentChatId);
+        await markMessagesAsRead(currentChatId, contactUid);
+        showView('chat');
+    }
+
+    function setupMessageListener(chatId) {
+        const messagesRef = database.ref(`messages/${chatId}`);
+        
+        messagesRef.on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            addMessageToChat(message);
+        });
+    }
+
+    function addMessageToChat(message) {
+        const messagesContainer = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        
+        const isSent = message.senderUid === currentUser.uid;
+        messageDiv.className = `message-bubble ${isSent ? 'message-sent' : 'message-received'}`;
+        
+        messageDiv.innerHTML = `
+            <div class="message-text">${message.text}</div>
+            <div class="message-time">${formatTime(message.timestamp)}</div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Send message - FIXED
+    document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        
+        if (!text || !currentChatPartner || !currentUserProfile) {
+            console.error('Cannot send message: missing required data');
+            return;
+        }
+        
+        // Create message object using currentUserProfile
+        const message = {
+            text: text,
+            senderUid: currentUser.uid,
+            senderUsername: currentUserProfile.username,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            read: false
+        };
+        
+        try {
+            await database.ref(`messages/${currentChatId}`).push(message);
+            
+            const unreadRef = database.ref(`unreadCounts/${currentChatPartner.uid}/${currentUser.uid}`);
+            const snapshot = await unreadRef.once('value');
+            const currentCount = snapshot.val() || 0;
+            await unreadRef.set(currentCount + 1);
+            
+            input.value = '';
+            
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    }
+
+    async function markMessagesAsRead(chatId, contactUid) {
+        try {
+            await database.ref(`unreadCounts/${currentUser.uid}/${contactUid}`).set(0);
+            
+            const messagesRef = database.ref(`messages/${chatId}`);
+            const snapshot = await messagesRef.once('value');
+            
+            const updates = {};
+            snapshot.forEach((childSnapshot) => {
+                const message = childSnapshot.val();
+                if (message.senderUid === contactUid && !message.read) {
+                    updates[`${childSnapshot.key}/read`] = true;
+                }
+            });
+            
+            if (Object.keys(updates).length > 0) {
+                await messagesRef.update(updates);
+            }
+            
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    }
+
+    function setupUnreadCountsListener(userId) {
+        const unreadRef = database.ref(`unreadCounts/${userId}`);
+        
+        unreadRef.on('value', (snapshot) => {
+            const counts = snapshot.val() || {};
+            let totalUnread = 0;
+            
+            Object.values(counts).forEach(count => {
+                totalUnread += count;
+            });
+            
+            document.getElementById('chats-badge').textContent = totalUnread || '';
+        });
+    }
+
+    // ======================
+    // WEBRTC CALLING - FIXED
+    // ======================
+    document.getElementById('voice-call-btn').addEventListener('click', () => {
+        startCall('audio');
+    });
+
+    document.getElementById('video-call-btn').addEventListener('click', () => {
+        startCall('video');
+    });
+
+    async function startCall(type) {
+        if (!currentChatPartner || !currentUserProfile) return;
+        
+        currentCallType = type;
+        const callId = Date.now().toString();
+        currentCallId = callId;
+        
+        try {
+            const constraints = {
+                audio: true,
+                video: type === 'video'
+            };
+            
+            localStream = await navigator.mediaDevices.getUserMedia(constraints);
+            
+            createPeerConnection();
+            
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            
+            // Use currentUserProfile for caller info
+            const callData = {
+                callerUid: currentUser.uid,
+                callerUsername: currentUserProfile.username,
+                callerDisplayName: currentUserProfile.displayName || currentUserProfile.username,
+                calleeUid: currentChatPartner.uid,
+                callId: callId,
+                type: type,
+                offer: offer,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                status: 'ringing'
+            };
+            
+            await database.ref(`calls/${currentChatPartner.uid}/${callId}`).set(callData);
+            
+            if (type === 'video') {
+                document.getElementById('local-video').srcObject = localStream;
+                document.getElementById('video-caller-name').textContent = `Calling ${currentChatPartner.displayName}...`;
+                showView('videoCall');
+            } else {
+                document.getElementById('audio-caller-name').textContent = `Calling ${currentChatPartner.displayName}...`;
+                showView('voiceCall');
+            }
+            
+            setupLocalICECandidates(callId);
+            
+        } catch (error) {
+            console.error('Error starting call:', error);
+            endCall();
+        }
+    }
+
+    function setupCallsListener(userId) {
+        const callsRef = database.ref(`calls/${userId}`);
+        
+        callsRef.on('child_added', (snapshot) => {
+            const callData = snapshot.val();
+            
+            if (callData.callerUid === userId) return;
+            
+            if (isUserBlocked(callData.callerUid)) {
+                database.ref(`calls/${userId}/${snapshot.key}`).remove();
+                return;
+            }
+            
+            showIncomingCallModal(callData);
+        });
+    }
+
+    function showIncomingCallModal(callData) {
+        incomingCallRef = database.ref(`calls/${currentUser.uid}/${callData.callId}`);
+        
+        document.getElementById('incoming-caller-name').textContent = callData.callerDisplayName;
+        document.getElementById('incoming-call-type').textContent = `${callData.type} call`;
+        document.getElementById('ringtone').play();
+        
+        showModal('incoming-call-modal');
+        
+        setTimeout(() => {
+            if (document.getElementById('incoming-call-modal').style.display !== 'none') {
+                rejectIncomingCall(callData.callId);
+            }
+        }, 30000);
+    }
+
+    async function acceptIncomingCall() {
+        hideModal('incoming-call-modal');
+        document.getElementById('ringtone').pause();
+        
+        const callDataSnapshot = await incomingCallRef.once('value');
+        const callData = callDataSnapshot.val();
+        
+        if (!callData) return;
+        
+        currentCallType = callData.type;
+        currentCallId = callData.callId;
+        
+        try {
+            const constraints = {
+                audio: true,
+                video: callData.type === 'video'
+            };
+            
+            localStream = await navigator.mediaDevices.getUserMedia(constraints);
+            
+            createPeerConnection();
+            
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
+            
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            
+            await incomingCallRef.update({
+                answer: answer,
+                status: 'accepted'
+            });
+            
+            setupLocalICECandidates(callData.callId);
+            setupRemoteICECandidates(callData.callId);
+            
+            if (callData.type === 'video') {
+                document.getElementById('local-video').srcObject = localStream;
+                document.getElementById('video-caller-name').textContent = callData.callerDisplayName;
+                document.getElementById('video-call-status').textContent = 'Connected';
+                showView('videoCall');
+            } else {
+                document.getElementById('audio-caller-name').textContent = callData.callerDisplayName;
+                document.getElementById('audio-call-status').textContent = 'Connected';
+                showView('voiceCall');
+            }
+            
+        } catch (error) {
+            console.error('Error accepting call:', error);
+            endCall();
+        }
+    }
+
+    function rejectIncomingCall(callId) {
+        document.getElementById('ringtone').pause();
+        hideModal('incoming-call-modal');
+        database.ref(`calls/${currentUser.uid}/${callId}`).update({
+            status: 'rejected'
+        });
+        
+        setTimeout(() => {
+            database.ref(`calls/${currentUser.uid}/${callId}`).remove();
+        }, 5000);
+    }
+
+    function createPeerConnection() {
+        const configuration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+        
+        peerConnection = new RTCPeerConnection(configuration);
+        
+        peerConnection.ontrack = (event) => {
+            remoteStream = event.streams[0];
+            
+            if (currentCallType === 'video') {
+                document.getElementById('remote-video').srcObject = remoteStream;
+            } else {
+                document.getElementById('remote-audio').srcObject = remoteStream;
+            }
+        };
+        
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate && currentCallId) {
+                database.ref(`iceCandidates/${currentCallId}/${currentUser.uid}`).push({
+                    candidate: event.candidate,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+        };
+        
+        peerConnection.onconnectionstatechange = () => {
+            if (peerConnection.connectionState === 'disconnected' || 
+                peerConnection.connectionState === 'failed') {
+                endCall();
+            }
+        };
+    }
+
+    function setupLocalICECandidates(callId) {
+        iceCandidatesRef = database.ref(`iceCandidates/${callId}/${currentUser.uid}`);
+    }
+
+    function setupRemoteICECandidates(callId) {
+        const otherUserId = currentChatPartner?.uid || Object.keys(peerConnection.getRemoteStreams())[0];
+        
+        database.ref(`iceCandidates/${callId}/${otherUserId}`).on('child_added', async (snapshot) => {
+            const candidateData = snapshot.val();
+            try {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidateData.candidate));
+            } catch (error) {
+                console.error('Error adding ICE candidate:', error);
+            }
+        });
+    }
+
+    async function endCall() {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        
+        if (currentCallId) {
+            await Promise.all([
+                database.ref(`calls/${currentUser.uid}/${currentCallId}`).remove(),
+                database.ref(`iceCandidates/${currentCallId}`).remove()
+            ]);
+            
+            currentCallId = null;
+        }
+        
+        if (currentChatPartner) {
+            await logCall(currentChatPartner.uid, currentCallType, 'ended');
+        }
+        
+        if (currentChatPartner) {
+            showView('chat');
+        } else {
+            showView('main');
+        }
+        
+        document.getElementById('ringtone').pause();
+    }
+
+    async function logCall(contactUid, type, status) {
+        await database.ref(`callLogs/${currentUser.uid}`).push({
+            contactUid: contactUid,
+            contactUsername: currentChatPartner?.username,
+            type: type,
+            status: status,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            duration: 0
+        });
+    }
+
+    // Call control buttons
+    document.getElementById('video-end-call-btn').addEventListener('click', endCall);
+    document.getElementById('audio-end-call-btn').addEventListener('click', endCall);
+    document.getElementById('accept-call-btn').addEventListener('click', acceptIncomingCall);
+    document.getElementById('reject-call-btn').addEventListener('click', () => {
+        rejectIncomingCall(currentCallId);
+    });
+
+    // ======================
+    // USER BLOCKING
+    // ======================
+    function loadBlockedUsers(userId) {
+        const blockedRef = database.ref(`blocked/${userId}`);
+        
+        blockedRef.on('value', (snapshot) => {
+            const blockedUsersList = document.getElementById('blocked-users-list');
+            blockedUsersList.innerHTML = '';
+            
+            const blockedUsers = snapshot.val() || {};
+            
+            Object.entries(blockedUsers).forEach(([blockedUid, blockedData]) => {
+                const blockedUserDiv = document.createElement('div');
+                blockedUserDiv.className = 'blocked-user';
+                blockedUserDiv.innerHTML = `
+                    <span>${blockedData.username}</span>
+                    <button class="unblock-btn" data-uid="${blockedUid}">Unblock</button>
+                `;
+                blockedUsersList.appendChild(blockedUserDiv);
+            });
+        });
+    }
+
+    document.getElementById('show-block-user').addEventListener('click', () => {
+        showModal('block-user-modal');
+        document.getElementById('block-user-form').reset();
+    });
+
+    document.getElementById('cancel-block-user').addEventListener('click', () => {
+        hideModal('block-user-modal');
+    });
+
+    document.getElementById('block-user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('block-username').value.trim();
+        const errorElement = document.getElementById('block-user-error');
+        
+        if (!username) {
+            errorElement.textContent = 'Please enter a username';
+            return;
+        }
+        
+        try {
+            const usernameSnapshot = await database.ref('usernames').child(username).once('value');
+            
+            if (!usernameSnapshot.exists()) {
+                errorElement.textContent = 'User not found';
+                return;
+            }
+            
+            const userToBlockUid = usernameSnapshot.val();
+            
+            if (userToBlockUid === currentUser.uid) {
+                errorElement.textContent = 'You cannot block yourself';
+                return;
+            }
+            
+            const userDataSnapshot = await database.ref(`users/${userToBlockUid}`).once('value');
+            const userData = userDataSnapshot.val();
+            
+            await database.ref(`blocked/${currentUser.uid}/${userToBlockUid}`).set({
+                uid: userToBlockUid,
+                username: userData.username,
+                displayName: userData.displayName || userData.username,
+                blockedAt: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            errorElement.textContent = 'User blocked successfully';
+            errorElement.style.color = 'green';
+            
+            setTimeout(() => {
+                hideModal('block-user-modal');
+                errorElement.style.color = '';
+                errorElement.textContent = '';
+            }, 1500);
+            
+        } catch (error) {
+            errorElement.textContent = error.message;
+        }
+    });
+
+    // Handle unblock
+    document.getElementById('blocked-users-list').addEventListener('click', (e) => {
+        if (e.target.classList.contains('unblock-btn')) {
+            const blockedUid = e.target.getAttribute('data-uid');
+            if (blockedUid) {
+                database.ref(`blocked/${currentUser.uid}/${blockedUid}`).remove();
+            }
+        }
+    });
+
+    function isUserBlocked(userUid) {
+        // This is a placeholder - implement with real data
+        return false;
+    }
+
+    // ======================
+    // NAVIGATION
+    // ======================
+    document.getElementById('back-btn').addEventListener('click', () => {
+        showView('main');
+        currentChatPartner = null;
+        currentChatId = null;
+    });
+
+    document.getElementById('menu-btn').addEventListener('click', () => {
+        showModal('profile-view-modal');
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        try {
+            await auth.signOut();
+            hideModal('profile-view-modal');
+            showView('auth');
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    });
+
+    // Navigation tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const panelName = tab.getAttribute('data-panel');
+            showPanel(panelName);
+        });
+    });
+
+    // Modal close on outside click
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    // ======================
+    // BADGE UPDATES
+    // ======================
+    function updateBadges() {
+        // Badges are updated by their respective listeners
+    }
+
+    // Initialize
+    showView('auth');
+</script>
